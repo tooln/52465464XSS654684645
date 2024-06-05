@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS Param Changer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="url"],
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 22px); /* Adjust for padding and border */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #copyButton {
+            background-color: #28a745;
+            color: #fff;
+            margin-top: 10px;
+        }
+        #copyButton:hover {
+            background-color: #218838;
+        }
+        #output {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        #output a {
+            display: block;
+            margin: 5px 0;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        #output a:hover {
+            color: #0056b3;
+        }
+        #output a.clicked {
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>XSS Parameter Changer</h1>
+        <form id="urlForm">
+            <label for="baseUrl">Base URL:</label>
+            <input type="url" id="baseUrl" name="baseUrl" required>
+            <label for="paramNames">Parameter Names (comma-separated):</label>
+            <input type="text" id="paramNames" name="paramNames" required>
+            <label for="paramValue">Parameter Value:</label>
+            <input type="text" id="paramValue" name="paramValue" required>
+            <button type="submit">Generate URLs</button>
+        </form>
+        <div id="output"></div>
+        <button id="copyButton" style="display:none;">Copy to Clipboard</button>
+        <center><p>Powered by Professor Software Solutions</p></center>
+    </div>
+
+    <script>
+        document.getElementById("urlForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form from submitting the traditional way
+
+            // Get form input values
+            var baseUrl = document.getElementById("baseUrl").value;
+            var paramNames = document.getElementById("paramNames").value;
+            var paramValue = document.getElementById("paramValue").value;
+
+            // Split parameter names into an array
+            var paramNamesArray = paramNames.split(',').map(name => name.trim());
+
+            // Encode parameter value to ensure it's URL-safe
+            var encodedParamValue = encodeURIComponent(paramValue);
+
+            // Initialize output HTML
+            var outputHtml = "<p>Generated URLs:</p>";
+
+            // Construct the final URLs
+            var urls = [];
+            paramNamesArray.forEach(function(paramName) {
+                var url = baseUrl + "?" + paramName + "=" + encodedParamValue;
+                outputHtml += "<a href='" + url + "' target='_blank' class='generated-link'>" + url + "</a><br>";
+                urls.push(url);
+            });
+
+            // Display the generated URLs
+            var outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = outputHtml;
+
+            // Show the copy button
+            var copyButton = document.getElementById("copyButton");
+            copyButton.style.display = 'block';
+
+            // Copy to Clipboard function
+            copyButton.onclick = function() {
+                var tempTextarea = document.createElement("textarea");
+                tempTextarea.value = urls.join("\n");
+                document.body.appendChild(tempTextarea);
+                tempTextarea.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempTextarea);
+                alert("URLs copied to clipboard!");
+            }
+
+            // Add event listener to change color on link click
+            document.querySelectorAll('.generated-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    this.classList.add('clicked');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
