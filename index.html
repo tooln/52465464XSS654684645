@@ -6,86 +6,108 @@
     <title>XSS Param Changer</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #eef2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #f5f5f5;
         }
+
         .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
-            color: #333;
+            text-align: center;
             margin-bottom: 20px;
+        }
+
+        form {
             text-align: center;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+
         label {
+            display: block;
             margin-bottom: 5px;
-            color: #555;
         }
+
         input[type="url"],
         input[type="text"] {
+            width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            width: calc(100% - 22px); /* Adjust for padding and border */
+            box-sizing: border-box;
         }
+
         button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-        button[type="submit"] {
             background-color: #007bff;
             color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        button[type="submit"]:hover {
+
+        button:hover {
             background-color: #0056b3;
         }
-        #copyButton {
-            background-color: #28a745;
-            color: #fff;
-            margin-top: 10px;
-        }
-        #copyButton:hover {
-            background-color: #218838;
-        }
+
         #output {
             margin-top: 20px;
             background-color: #f9f9f9;
             padding: 20px;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
         }
-        #output a {
+
+        #output p {
+            margin: 0 0 15px;
+            font-weight: bold;
+        }
+
+        .generated-link {
             display: block;
-            margin: 5px 0;
+            margin-bottom: 10px;
             color: #007bff;
             text-decoration: none;
             transition: color 0.3s;
         }
-        #output a:hover {
+
+        .generated-link:hover {
             color: #0056b3;
         }
-        #output a.clicked {
-            color: #000000;
+
+        .generated-link.clicked {
+            color: #000;
+        }
+
+        #copyButton {
+            display: none;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #copyButton:hover {
+            background-color: #218838;
+        }
+
+        center {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
@@ -93,17 +115,14 @@
     <div class="container">
         <h1>XSS Parameter Changer</h1>
         <form id="urlForm">
-            <label for="baseUrl">Base URL:</label>
-            <input type="url" id="baseUrl" name="baseUrl" required>
-            <label for="paramNames">Parameter Names (comma-separated):</label>
-            <input type="text" id="paramNames" name="paramNames" required>
-            <label for="paramValue">Parameter Value:</label>
-            <input type="text" id="paramValue" name="paramValue" required>
+            <input type="url" id="baseUrl" name="baseUrl" placeholder="XSS Endpoint URL" required><br>
+            <input type="text" id="paramNames" name="paramNames" placeholder="Comma-Separated Parameters" required><br>
+            <input type="text" id="paramValue" name="paramValue" placeholder="XSS Payload" required><br>
             <button type="submit">Generate URLs</button>
         </form>
         <div id="output"></div>
-        <button id="copyButton" style="display:none;">Copy to Clipboard</button>
-        <center><p>Powered by Professor Software Solutions</p></center>
+        <button id="copyButton">Copy to Clipboard</button>
+        <center>Powered by Professor Software Solutions</center>
     </div>
 
     <script>
@@ -135,6 +154,7 @@
             // Display the generated URLs
             var outputDiv = document.getElementById("output");
             outputDiv.innerHTML = outputHtml;
+            outputDiv.style.display = 'block'; // Display the output section
 
             // Show the copy button
             var copyButton = document.getElementById("copyButton");
@@ -148,8 +168,8 @@
                 tempTextarea.select();
                 document.execCommand("copy");
                 document.body.removeChild(tempTextarea);
-                alert("URLs copied to clipboard!");
-            }
+                console.log("URLs copied to clipboard!");
+            };
 
             // Add event listener to change color on link click
             document.querySelectorAll('.generated-link').forEach(function(link) {
